@@ -1,10 +1,10 @@
-USE test_gpr3nc_db;
+USE test;
 
 -- Generate a list of all tables in the database
 SET @tables = NULL;
 SELECT GROUP_CONCAT(table_name) INTO @tables
 FROM information_schema.tables
-WHERE table_schema = 'test_gpr3nc_db';
+WHERE table_schema = 'test';
 
 -- Prepare the dynamic SQL statement to drop all tables
 SET @drop_all_tables = CONCAT('DROP TABLE IF EXISTS ', @tables);

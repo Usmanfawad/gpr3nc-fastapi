@@ -1,11 +1,10 @@
-from app.db import engine, SQLModel
-from app.models.user import User
+from app.db import Base, engine
+from app.models import user
 
 
-# Initialize the database (create tables)
 def init_db():
-    SQLModel.metadata.create_all(engine)
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
 
 
-# Call the function to create tables
 init_db()

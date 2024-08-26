@@ -1,8 +1,19 @@
+from datetime import datetime
 from enum import Enum
-from typing import Optional, List
-from sqlmodel import SQLModel, Field, Relationship
-from sqlalchemy import Column, Integer, Float, String, Text, Enum as SAEnum, JSON
+from sqlalchemy import (
+    DateTime,
+    Text,
+    create_engine,
+    Column,
+    Integer,
+    Float,
+    String,
+    Enum as SAEnum,
+    JSON,
+    ForeignKey,
+)
 from sqlalchemy.orm import relationship
+from app.db import Base
 
 
 class RoleEnum(Enum):
@@ -15,43 +26,68 @@ class PropertyTypeEnum(Enum):
     apartment = "apartment"
 
 
-class Listing(SQLModel, table=True):
-    id: int = Field(primary_key=True, index=True, default=None)
-    title: str
-    description: str
-    rooms: int
-    square_footage: float
-    price: float
-    deposit: Optional[float] = None
-    availability: str
-    floor: Optional[int] = None
-    bathrooms: int
-    city: str
-    neighborhood: str
-    street: str
-    property_type: PropertyTypeEnum
-    views: int = Field(default=0)
-    views_last_month: int = Field(default=0)
-    additional_info: Optional[List[str]] = Field(
-        default=None, sa_column=Column(JSON)
-    )  # Use JSON type for lists
-    user_id: Optional[int] = Field(default=None, foreign_key="user.id")
-
-    user: Optional["User"] = Relationship(back_populates="listings")
+class ListingStatusEnum(Enum):
+    active = "active"
+    inactive = "inactive"
 
 
-class User(SQLModel, table=True):
-    id: int = Field(primary_key=True, index=True, default=None)
-    email: str = Field(index=True, unique=True, max_length=255)
-    username: str
-    password: str
-    role: RoleEnum
-    agency_id: Optional[int] = Field(default=None, foreign_key="agency.id")
-    agency: Optional["Agency"] = Relationship(back_populates="users")
-    listings: List["Listing"] = Relationship(back_populates="user")
+class User(Base):
+    __tablename__ = "user"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(20), unique=True, index=True, nullable=False)
+    username = Column(String(20), nullable=False)
+    password = Column(String(200), nullable=False)
+    role = Column(SAEnum(RoleEnum), nullable=False)
+    agency_id = Column(Integer, ForeignKey("agency.id"), nullable=True)
+
+    agency = relationship("Agency", back_populates="users")
+    listings = relationship("Listing", back_populates="user")
+    listing_visits = relationship("ListingVisit", back_populates="user")
 
 
-class Agency(SQLModel, table=True):
-    id: int = Field(primary_key=True, index=True, default=None)
-    name: str
-    users: List["User"] = Relationship(back_populates="agency")
+class Agency(Base):
+    __tablename__ = "agency"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(20), nullable=False)
+    password = Column(String(200), nullable=False)
+
+    users = relationship("User", back_populates="agency")
+
+
+class Listing(Base):
+    __tablename__ = "listing"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(20), nullable=False)
+    description = Column(String(200), nullable=False)
+    status = Column(SAEnum(ListingStatusEnum), nullable=False)
+    rooms = Column(Integer, nullable=False)
+    square_footage = Column(Float, nullable=False)
+    price = Column(Float, nullable=False)
+    deposit = Column(Float, nullable=True)
+    floor = Column(Integer, nullable=True)
+    bathrooms = Column(Integer, nullable=False)
+    city = Column(String(20), nullable=False)
+    neighborhood = Column(String(20), nullable=False)
+    street = Column(String(20), nullable=False)
+    photo_urls = Column(JSON, nullable=True)
+    property_type = Column(SAEnum(PropertyTypeEnum), nullable=False)
+    additional_info = Column(JSON, nullable=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=True)
+
+    user = relationship("User", back_populates="listings")
+    listing_visits = relationship("ListingVisit", back_populates="listing")
+
+
+class ListingVisit(Base):
+    __tablename__ = "listing_visit"
+
+    id = Column(Integer, primary_key=True, index=True)
+    listing_id = Column(Integer, ForeignKey("listing.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    visit_date = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="listing_visits")
+    listing = relationship("Listing", back_populates="listing_visits")
