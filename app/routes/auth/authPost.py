@@ -1,4 +1,3 @@
-from fastapi.encoders import jsonable_encoder
 from .authManagement import *
 
 
@@ -33,7 +32,7 @@ def agency_signup(agency: dict, session: Session = Depends(get_db)):
         session.query(Agency).filter(Agency.name == agency["name"]).first()
     )
     if existing_agency:
-        raise HTTPException(status_code=400, detail="Agency already exists")
+        return response(400, "Agency already exists")
 
     agency["password"] = get_hashed_password(agency["password"])
     new_agency = Agency(**agency)

@@ -14,21 +14,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from app.db import Base
-
-
-class RoleEnum(Enum):
-    landlord = "landlord"
-    tenant = "tenant"
-
-
-class PropertyTypeEnum(Enum):
-    house = "house"
-    apartment = "apartment"
-
-
-class ListingStatusEnum(Enum):
-    active = "active"
-    inactive = "inactive"
+from app.models.enums import ListingStatusEnum, PropertyTypeEnum, RoleEnum
 
 
 class User(Base):
@@ -54,6 +40,7 @@ class Agency(Base):
     password = Column(String(200), nullable=False)
 
     users = relationship("User", back_populates="agency")
+    listings = relationship("Listing", back_populates="agency")
 
 
 class Listing(Base):
@@ -64,6 +51,7 @@ class Listing(Base):
     description = Column(String(200), nullable=False)
     status = Column(SAEnum(ListingStatusEnum), nullable=False)
     rooms = Column(Integer, nullable=False)
+    capacity = Column(Integer, nullable=False)
     square_footage = Column(Float, nullable=False)
     price = Column(Float, nullable=False)
     deposit = Column(Float, nullable=True)
@@ -76,7 +64,9 @@ class Listing(Base):
     property_type = Column(SAEnum(PropertyTypeEnum), nullable=False)
     additional_info = Column(JSON, nullable=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=True)
+    agency_id = Column(Integer, ForeignKey("agency.id"), nullable=True)
 
+    agency = relationship("Agency", back_populates="listings")
     user = relationship("User", back_populates="listings")
     listing_visits = relationship("ListingVisit", back_populates="listing")
 
@@ -91,3 +81,25 @@ class ListingVisit(Base):
 
     user = relationship("User", back_populates="listing_visits")
     listing = relationship("Listing", back_populates="listing_visits")
+
+
+class Wishlist(Base):
+    __tablename__ = "wishlist"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    listing_id = Column(Integer, ForeignKey("listing.id"), nullable=False)
+
+    user = relationship("User")
+    listing = relationship("Listing")
+
+
+class Search(Base):
+    __tablename__ = "search"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    keywords = Column(String(100), nullable=False)
+    date_created = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User")
