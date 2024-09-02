@@ -1,3 +1,6 @@
+import json
+
+from pydantic import ValidationError
 from .wishlistManagement import *
 
 
@@ -8,7 +11,15 @@ def save_wishlist(
     if not isinstance(current_user, User):
         return current_user
     wishlist["user_id"] = current_user.id
-    wishlist = Wishlist(**wishlist)
+    if not wishlist.get("listing_id"):
+        return response(400, "Listing ID is required")
+
+    try:
+        wishlist = Wishlist(**wishlist)
+    except (json.JSONDecodeError, ValidationError) as e:
+        print(f"Error decoding JSON or validating data: {e}")
+        return response(400, "Invalid data format or missing required fields")
+
     session.add(wishlist)
     session.commit()
     session.refresh(wishlist)

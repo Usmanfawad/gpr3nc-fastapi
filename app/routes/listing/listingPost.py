@@ -9,7 +9,7 @@ def create_listing(
     current_user=Depends(auth_dep),
 ):
     if not isinstance(current_user, User):
-        return response(403, "Invalid user")
+        return current_user
 
     if current_user.role == "tenant":
         return response(403, "Tenants cannot create listings")

@@ -1,11 +1,24 @@
+import json
+
+from pydantic import ValidationError
 from .authManagement import *
 
 
 @router.post("/signup", response_model=dict)
 def signup(user: dict, session: Session = Depends(get_db)):
-    user = User(**user)
+    try:
+        user = User(**user)
+    except (json.JSONDecodeError, ValidationError) as e:
+        print(f"Error decoding JSON or validating data: {e}")
+        return response(400, "Invalid data format or missing required fields")
+
     if session.query(User).filter(User.email == user.email).first():
         return response(400, "User already exists")
+    if user.agency_id:
+        agency = session.query(Agency).filter(Agency.id == user.agency_id).first()
+        if not agency:
+            return response(400, "Agency does not exist")
+
     if not user.email:
         return response(400, "Email is required")
     if not user.password:
@@ -45,7 +58,11 @@ def agency_signup(agency: dict, session: Session = Depends(get_db)):
         return response(400, "Agency already exists")
 
     agency["password"] = get_hashed_password(agency["password"])
-    new_agency = Agency(**agency)
+    try:
+        new_agency = Agency(**agency)
+    except (json.JSONDecodeError, ValidationError) as e:
+        print(f"Error decoding JSON or validating data: {e}")
+        return response(400, "Invalid data format or missing required fields")
 
     session.add(new_agency)
     session.commit()

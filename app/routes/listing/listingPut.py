@@ -22,7 +22,11 @@ def update_listing(
     ):
         return response(403, "You do not have permission to update this listing")
 
-    listing_data = ListingCreate(**json.loads(listing))
+    try:
+        listing_data = ListingCreate(**listing_data)
+    except (json.JSONDecodeError, ValidationError) as e:
+        print(f"Error decoding JSON or validating data: {e}")
+        return response(400, "Invalid data format or missing required fields")
 
     if photos:
         photo_paths = save_files(photos, PUBLIC_DIR)
