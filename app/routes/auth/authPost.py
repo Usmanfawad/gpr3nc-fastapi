@@ -40,6 +40,8 @@ def signup(user: dict, session: Session = Depends(get_db)):
 
 @router.post("/login", response_model=dict)
 def login(user: dict, session: Session = Depends(get_db)):
+    if not user.get("email") or not user.get("password"):
+        return response(400, "Email and password are required")
     db_user = session.query(User).filter(User.email == user["email"]).first()
     if db_user is None or db_user.password != get_hashed_password(user["password"]):
         return response(400, "Invalid credentials")
