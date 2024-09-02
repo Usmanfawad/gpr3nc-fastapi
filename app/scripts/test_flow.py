@@ -48,75 +48,28 @@ agency_details_response = requests.get(agency_details_url)
 print("\n\nGet Agency Details Response:")
 print(agency_details_response.json())
 
-# Update Landlord
-update_landlord_url = f"{base_url}/user/1"
-update_landlord_data = {"username": "updated_landlord", "password": "newpassword"}
-update_landlord_response = requests.put(update_landlord_url, json=update_landlord_data)
-print("\n\nUpdate Landlord Response:")
-print(update_landlord_response.json())
-
-# Update Agency
-update_agency_url = f"{base_url}/agency/1"
-update_agency_data = {"name": "UpdatedAgency", "password": "newsecurepassword"}
-update_agency_response = requests.put(update_agency_url, json=update_agency_data)
-print("\n\nUpdate Agency Response:")
-print(update_agency_response.json())
-
 # Landlord Login
 landlord_login_url = f"{base_url}/auth/login"
-landlord_login_data = {"email": "landlord@agency.com", "password": "newpassword"}
+landlord_login_data = {"email": "landlord@agency.com", "password": "123"}
 landlord_login_response = requests.post(landlord_login_url, json=landlord_login_data)
 print("\n\nLandlord Login Response:")
 print(landlord_login_response.json())
 landlord_token = landlord_login_response.json().get("token")
+auth_header = {"Authorization": f"Bearer {landlord_token}"}
+
+# Update Landlord
+update_landlord_url = f"{base_url}/user/1"
+update_landlord_data = {"username": "updated_landlord", "password": "newpassword"}
+update_landlord_response = requests.put(
+    update_landlord_url, json=update_landlord_data, headers=auth_header
+)
+print("\n\nUpdate Landlord Response:")
+print(update_landlord_response.json())
+
 
 # Create a Listing
 create_listing_url = f"{base_url}/listing/save"
 listing_data = {
-    "listing": json.dumps(
-        {
-            "title": "Beautiful Apartment",
-            "description": "Spacious 3-bedroom apartment with a great view.",
-            "status": "active",
-            "rooms": 3,
-            "square_footage": 1500.0,
-            "price": 2000.0,
-            "deposit": 500.0,
-            "floor": 5,
-            "bathrooms": 2,
-            "city": "New York",
-            "neighborhood": "Manhattan",
-            "street": "5th Avenue",
-            "property_type": "apartment",
-            "capacity": 4,
-        }
-    ),
-}
-listing_files = {"photos": open(listing_photo_path, "rb")}
-listing_headers = {"Authorization": f"Bearer {landlord_token}"}
-create_listing_response = requests.post(
-    create_listing_url, headers=listing_headers, files=listing_files, data=listing_data
-)
-print("\n\nCreate Listing Response:")
-print(create_listing_response.json())
-
-# Get an Individual Listing (replace 2 with your listing ID)
-get_individual_listing_url = f"{base_url}/listing/indivisual/2"
-get_individual_listing_response = requests.get(
-    get_individual_listing_url, headers=listing_headers
-)
-print("\n\nGet Individual Listing Response:")
-print(get_individual_listing_response.json())
-
-# Get All Listings
-get_all_listings_url = f"{base_url}/listing/all"
-get_all_listings_response = requests.get(get_all_listings_url, headers=listing_headers)
-print("\n\nGet All Listings Response:")
-print(get_all_listings_response.json())
-
-# Update a Listing (replace 2 with your listing ID)
-update_listing_url = f"{base_url}/listing/update/2"
-update_listing_data = {
     "listing": json.dumps(
         {
             "title": "Updated Apartment",
@@ -137,21 +90,60 @@ update_listing_data = {
         }
     ),
 }
+listing_files = {"photos": open(listing_photo_path, "rb")}
+
+create_listing_response = requests.post(
+    create_listing_url, headers=auth_header, files=listing_files, data=listing_data
+)
+print("\n\nCreate Listing Response:")
+print(create_listing_response.json())
+
+# Get an Individual Listing (replace 2 with your listing ID)
+get_individual_listing_url = f"{base_url}/listing/indivisual/1"
+get_individual_listing_response = requests.get(
+    get_individual_listing_url, headers=auth_header
+)
+print("\n\nGet Individual Listing Response:")
+print(get_individual_listing_response.json())
+
+# Get All Listings
+get_all_listings_url = f"{base_url}/listing/all"
+get_all_listings_response = requests.get(get_all_listings_url, headers=auth_header)
+print("\n\nGet All Listings Response:")
+print(get_all_listings_response.json())
+
+# Update a Listing (replace 2 with your listing ID)
+update_listing_url = f"{base_url}/listing/update/1"
+update_listing_data = {
+    "listing": json.dumps(
+        {
+            "title": "Beautiful Apartment",
+            "description": "Spacious 3-bedroom apartment with a great view.",
+            "status": "active",
+            "rooms": 3,
+            "square_footage": 1500.0,
+            "price": 2000.0,
+            "deposit": 500.0,
+            "floor": 5,
+            "bathrooms": 2,
+            "city": "New York",
+            "neighborhood": "Manhattan",
+            "street": "5th Avenue",
+            "property_type": "apartment",
+            "capacity": 4,
+        }
+    ),
+}
 update_listing_files = {"photos": open(listing_photo_path, "rb")}
 update_listing_response = requests.put(
     update_listing_url,
-    headers=listing_headers,
+    headers=auth_header,
     files=update_listing_files,
     data=update_listing_data,
 )
 print("\n\nUpdate Listing Response:")
 print(update_listing_response.json())
 
-# Delete a Listing (replace 2 with your listing ID)
-delete_listing_url = f"{base_url}/listing/delete/2"
-delete_listing_response = requests.delete(delete_listing_url, headers=listing_headers)
-print("\n\nDelete Listing Response:")
-print(delete_listing_response.json())
 
 # Advanced Filters
 advanced_filters_url = f"{base_url}/listing/all"
@@ -166,7 +158,7 @@ advanced_filters_params = {
     "sort_order": "asc",
 }
 advanced_filters_response = requests.get(
-    advanced_filters_url, headers=listing_headers, params=advanced_filters_params
+    advanced_filters_url, headers=auth_header, params=advanced_filters_params
 )
 print("\n\nAdvanced Filters Response:")
 print(advanced_filters_response.json())
@@ -175,7 +167,13 @@ print(advanced_filters_response.json())
 advanced_searches_url = f"{base_url}/listing/all"
 advanced_searches_params = {"keywords": "Beautiful Apartment", "city": "New York"}
 advanced_searches_response = requests.get(
-    advanced_searches_url, headers=listing_headers, params=advanced_searches_params
+    advanced_searches_url, headers=auth_header, params=advanced_searches_params
 )
 print("\n\nAdvanced Searches Response:")
 print(advanced_searches_response.json())
+
+# Delete a Listing (replace 2 with your listing ID)
+delete_listing_url = f"{base_url}/listing/delete/1"
+delete_listing_response = requests.delete(delete_listing_url, headers=auth_header)
+print("\n\nDelete Listing Response:")
+print(delete_listing_response.json())
