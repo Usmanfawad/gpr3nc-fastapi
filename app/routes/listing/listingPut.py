@@ -23,7 +23,7 @@ def update_listing(
         return response(403, "You do not have permission to update this listing")
 
     try:
-        listing_data = ListingCreate(**listing_data)
+        listing_data = ListingCreate(**json.loads(listing))
     except (json.JSONDecodeError, ValidationError) as e:
         print(f"Error decoding JSON or validating data: {e}")
         return response(400, "Invalid data format or missing required fields")

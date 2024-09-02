@@ -9,7 +9,7 @@ agency_signup_url = f"{base_url}/auth/agency/signup"
 agency_signup_data = {"name": "AwesomeAgency", "password": "securepassword"}
 agency_signup_response = requests.post(agency_signup_url, json=agency_signup_data)
 print("\n\nAgency Signup Response:")
-print(agency_signup_response.json())
+print(agency_signup_response.text)
 
 # Landlord Signup
 landlord_signup_url = f"{base_url}/auth/signup"
@@ -22,7 +22,7 @@ landlord_signup_data = {
 }
 landlord_signup_response = requests.post(landlord_signup_url, json=landlord_signup_data)
 print("\n\nLandlord Signup Response:")
-print(landlord_signup_response.json())
+print(landlord_signup_response.text)
 
 # Tenant Signup
 tenant_signup_url = f"{base_url}/auth/signup"
@@ -34,29 +34,28 @@ tenant_signup_data = {
 }
 tenant_signup_response = requests.post(tenant_signup_url, json=tenant_signup_data)
 print("\n\nTenant Signup Response:")
-print(tenant_signup_response.json())
+print(tenant_signup_response.text)
 
 # Get Landlord Details
 landlord_details_url = f"{base_url}/user/1"
 landlord_details_response = requests.get(landlord_details_url)
 print("\n\nGet Landlord Details Response:")
-print(landlord_details_response.json())
+print(landlord_details_response.text)
 
 # Get Agency Details
 agency_details_url = f"{base_url}/agency/1"
 agency_details_response = requests.get(agency_details_url)
 print("\n\nGet Agency Details Response:")
-print(agency_details_response.json())
+print(agency_details_response.text)
 
 # Landlord Login
 landlord_login_url = f"{base_url}/auth/login"
 landlord_login_data = {"email": "landlord@agency.com", "password": "123"}
 landlord_login_response = requests.post(landlord_login_url, json=landlord_login_data)
 print("\n\nLandlord Login Response:")
-print(landlord_login_response.json())
+print(landlord_login_response.text)
 landlord_token = landlord_login_response.json().get("token")
-auth_header = {"Authorization": f"Bearer {landlord_token}"}
-
+auth_header = {"auth-token": f"Bearer {landlord_token}"}
 # Update Landlord
 update_landlord_url = f"{base_url}/user/1"
 update_landlord_data = {"username": "updated_landlord", "password": "newpassword"}
@@ -64,7 +63,7 @@ update_landlord_response = requests.put(
     update_landlord_url, json=update_landlord_data, headers=auth_header
 )
 print("\n\nUpdate Landlord Response:")
-print(update_landlord_response.json())
+print(update_landlord_response.text)
 
 
 # Create a Listing
@@ -96,7 +95,7 @@ create_listing_response = requests.post(
     create_listing_url, headers=auth_header, files=listing_files, data=listing_data
 )
 print("\n\nCreate Listing Response:")
-print(create_listing_response.json())
+print(create_listing_response.text)
 
 # Get an Individual Listing (replace 2 with your listing ID)
 get_individual_listing_url = f"{base_url}/listing/indivisual/1"
@@ -104,13 +103,13 @@ get_individual_listing_response = requests.get(
     get_individual_listing_url, headers=auth_header
 )
 print("\n\nGet Individual Listing Response:")
-print(get_individual_listing_response.json())
+print(get_individual_listing_response.text)
 
 # Get All Listings
 get_all_listings_url = f"{base_url}/listing/all"
 get_all_listings_response = requests.get(get_all_listings_url, headers=auth_header)
 print("\n\nGet All Listings Response:")
-print(get_all_listings_response.json())
+print(get_all_listings_response.text)
 
 # Update a Listing (replace 2 with your listing ID)
 update_listing_url = f"{base_url}/listing/update/1"
@@ -142,7 +141,7 @@ update_listing_response = requests.put(
     data=update_listing_data,
 )
 print("\n\nUpdate Listing Response:")
-print(update_listing_response.json())
+print(update_listing_response.text)
 
 
 # Advanced Filters
@@ -161,7 +160,7 @@ advanced_filters_response = requests.get(
     advanced_filters_url, headers=auth_header, params=advanced_filters_params
 )
 print("\n\nAdvanced Filters Response:")
-print(advanced_filters_response.json())
+print(advanced_filters_response.text)
 
 # Advanced Searches
 advanced_searches_url = f"{base_url}/listing/all"
@@ -170,10 +169,10 @@ advanced_searches_response = requests.get(
     advanced_searches_url, headers=auth_header, params=advanced_searches_params
 )
 print("\n\nAdvanced Searches Response:")
-print(advanced_searches_response.json())
+print(advanced_searches_response.text)
 
 # Delete a Listing (replace 2 with your listing ID)
 delete_listing_url = f"{base_url}/listing/delete/1"
 delete_listing_response = requests.delete(delete_listing_url, headers=auth_header)
 print("\n\nDelete Listing Response:")
-print(delete_listing_response.json())
+print(delete_listing_response.text)
