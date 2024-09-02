@@ -6,6 +6,16 @@ def signup(user: dict, session: Session = Depends(get_db)):
     user = User(**user)
     if session.query(User).filter(User.email == user.email).first():
         return response(400, "User already exists")
+    if not user.email:
+        return response(400, "Email is required")
+    if not user.password:
+        return response(400, "Password is required")
+    if not user.username:
+        return response(400, "Username is required")
+    if not user.role:
+        return response(
+            400, "Role is required. Choose between 'landlord' and 'tenant'."
+        )
     user.password = get_hashed_password(user.password)
     session.add(user)
     session.commit()

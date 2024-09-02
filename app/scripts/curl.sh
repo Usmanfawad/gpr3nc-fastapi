@@ -82,12 +82,11 @@ curl -X POST "http://localhost:8000/auth/login" \
 echo ""
 echo ""
 
-# # Create a property
+# # Create a Listing
 curl -X POST "http://localhost:8000/listing/save" \
  -H "Content-Type: multipart/form-data" \
- -H "Authorization: Bearer <TOKEN>"
- -F "listing={\"title\":\"Beautiful Apartment\",\"description\":\"Spacious 3-bedroom apartment with a great view.\",\"status\":\"active\",\"rooms\":3,\"square_footage\":1500.0,\"price\":2000.0,\"deposit\":500.0,\"floor\":5,\"bathrooms\":2,\"city\":\"New York\",\"neighborhood\":\"Manhattan\",\"street\":\"5th Avenue\",\"property_type\":\"apartment\"}"
- -F "photos=@/home/f/Downloads/unnamed.png"
+ -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxhbmRsb3JkQGFnZW5jeS5jb20iLCJpZCI6MSwiZXhwIjoxNzI1MzIyNDMwfQ.a9ov90VICbIxk4ElHvBtkSGrETj8MRSyGGUWx17kQts" \
+ -F "listing={\"title\":\"Beautiful Apartment\",\"description\":\"Spacious 3-bedroom apartment with a great view.\",\"status\":\"active\",\"rooms\":3,\"square_footage\":1500.0,\"price\":2000.0,\"deposit\":500.0,\"floor\":5,\"bathrooms\":2,\"city\":\"New York\",\"neighborhood\":\"Manhattan\",\"street\":\"5th Avenue\",\"property_type\":\"apartment\", \"capacity\":4}" \
  -F "photos=@/home/f/Downloads/unnamed.png"
 
 # echo ""
@@ -126,5 +125,5 @@ curl -X POST "http://localhost:8000/listing/save" \
 curl -X GET "http://localhost:8000/listing/all?is_active=True&keywords=Beautiful%20Apartment&city=New%20York&neighborhood=Manhattan&min_price=1500.0&max_price=2500.0&min_rooms=2&max_rooms=4&capacity=4&additional_info=fnear%20downtown,fpet-friendly&sort_by=price&sort_order=asc" -H "Authorization: Bearer <your_token>"
 
 # # Advance Searches
-# curl -X GET "http://localhost:8000/listing/all?keywords=Beautiful%20Apartment&city=New%20York" -H "Authorization: Bearer <your_token>"
+curl -X GET "http://localhost:8000/listing/all?keywords=Beautiful%20Apartment&city=New%20York" -H "Authorization: Bearer <your_token>"
 

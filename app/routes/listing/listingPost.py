@@ -23,6 +23,7 @@ def create_listing(
     try:
         # Load and validate listing data
         listing_data = json.loads(listing)
+        print(listing_data)
         listing = ListingCreate(**listing_data)
     except (json.JSONDecodeError, ValidationError) as e:
         print(f"Error decoding JSON or validating data: {e}")

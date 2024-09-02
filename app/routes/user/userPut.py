@@ -1,12 +1,21 @@
+from app.dependencies.auth import auth_dep
 from .userManagement import *
 
 
 @router.put("/user/{user_id}", response_model=dict)
-def update_user(user_id: int, user_update: dict, session: Session = Depends(get_db)):
+def update_user(
+    user_id: int,
+    user_update: dict,
+    session: Session = Depends(get_db),
+    current_user=Depends(auth_dep),
+):
+    if not isinstance(current_user, User):
+        return response(401, "You are not authorized to update this user")
     user = session.query(User).filter(User.id == user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-
+    if user_id != current_user.id:
+        return response(401, "You are not authorized to update this user")
     for key, value in user_update.items():
         if hasattr(user, key) and key != "id":  # Prevent updating ID
             setattr(user, key, value)
