@@ -114,7 +114,7 @@ SECRET_KEY="anyrandomstring"
 Run the FastAPI application:
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn app.main:api_app --reload
 ```
 
 ### 5. Access the API
@@ -123,4 +123,6 @@ The API documentation will be available at `http://localhost:8000/docs`.
 
 ## Testing the Application
 
-You can test various endpoints using `curl` or tools like Postman. all sample curl requests are written in [app.utils.scripts](https://github.com/Usmanfawad/gpr3nc-fastapi/blob/main/app/utils/scripts/curl.sh)
+You can test various endpoints using `python` or tools like Postman. all sample curl requests are written in [app.scripts.test_flow.py](https://github.com/Usmanfawad/gpr3nc-fastapi/blob/main/app/scripts/test_flow.py)
+
+Alternatively, you can test using `curl` by running [app.scripts.curl.sh](https://github.com/Usmanfawad/gpr3nc-fastapi/blob/main/app/scripts/curl.sh) script.
